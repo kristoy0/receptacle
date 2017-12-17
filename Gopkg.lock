@@ -32,6 +32,12 @@
   version = "v0.3.2"
 
 [[projects]]
+  name = "github.com/moby/moby"
+  packages = ["client"]
+  revision = "092cba3727bb9b4a2f0e922cd6c0f93ea270e363"
+  version = "v1.13.1"
+
+[[projects]]
   name = "github.com/pkg/errors"
   packages = ["."]
   revision = "645ef00459ed84a119197bfb8d8205042c6df63d"
@@ -52,6 +58,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "401839ceadf25aa24ef7b6f42bc52605dbab3725c95991f02a4c2233d6492f1a"
+  inputs-digest = "5ee90384c0d3343cc2fe4d3f770474c29f2fbb3c8edda8d7925ffd987174860b"
   solver-name = "gps-cdcl"
   solver-version = 1
