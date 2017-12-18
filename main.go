@@ -30,6 +30,10 @@ func main() {
 		v1.GET("/node", api.ListNodes)
 		v1.GET("/node/:nodeID", api.InspectNode)
 		v1.GET("/", api.ManagerInfo)
+
+		// Tasks
+		v1.GET("/task", api.ListTasks)
+		v1.GET("/task/:taskID", api.InspectTask)
 	}
 
 	r.Run(":8080")
