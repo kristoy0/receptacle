@@ -25,6 +25,11 @@ func main() {
 		v1.GET("/image", api.ListImages)
 		v1.GET("/image/:imageID", api.InspectImage)
 		v1.DELETE("/image/:imageID", api.RemoveImage)
+
+		// Nodes
+		v1.GET("/node", api.ListNodes)
+		v1.GET("/node/:nodeID", api.InspectNode)
+		v1.GET("/", api.ManagerInfo)
 	}
 
 	r.Run(":8080")

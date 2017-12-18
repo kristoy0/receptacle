@@ -5,7 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// InspectImage- inspects an image
+// InspectImage - inspects an image
 func InspectImage(c *gin.Context) {
 	ctx, cli, err := FetchContextAndClient()
 	if err != nil {
