@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// CreateService - creates a new docker service
 func CreateService(c *gin.Context) {
 	ctx, cli, err := FetchContextAndClient()
 	if err != nil {
@@ -17,35 +18,38 @@ func CreateService(c *gin.Context) {
 	c.JSON(200, service)
 }
 
+// UpdateService - updates an existing service
 func UpdateService(c *gin.Context) {
 	ctx, cli, err := FetchContextAndClient()
 	if err != nil {
 		c.JSON(200, err)
 	}
 	var service swarm.ServiceSpec
-	id := c.Param("id")
-	svc, _, err := cli.ServiceInspectWithRaw(ctx, id)
+	serviceID := c.Param("serviceID")
+	svc, _, err := cli.ServiceInspectWithRaw(ctx, serviceID)
 	if err != nil {
 		c.JSON(200, err)
 	}
 	c.BindJSON(&service)
-	cli.ServiceUpdate(ctx, id, svc.Version, service, types.ServiceUpdateOptions{})
+	cli.ServiceUpdate(ctx, serviceID, svc.Version, service, types.ServiceUpdateOptions{})
 
 }
 
+// InspectService - inspects a service
 func InspectService(c *gin.Context) {
 	ctx, cli, err := FetchContextAndClient()
 	if err != nil {
 		c.JSON(200, err)
 	}
-	id := c.Param("id")
-	svc, _, err := cli.ServiceInspectWithRaw(ctx, id)
+	serviceID := c.Param("serviceID")
+	svc, _, err := cli.ServiceInspectWithRaw(ctx, serviceID)
 	if err != nil {
 		c.JSON(200, err)
 	}
 	c.JSON(200, svc)
 }
 
+// ListServices - lists all services
 func ListServices(c *gin.Context) {
 	ctx, cli, err := FetchContextAndClient()
 	if err != nil {
@@ -55,11 +59,12 @@ func ListServices(c *gin.Context) {
 	c.JSON(200, svc)
 }
 
+// RemoveService - removes a service
 func RemoveService(c *gin.Context) {
 	ctx, cli, err := FetchContextAndClient()
 	if err != nil {
 		c.JSON(200, err)
 	}
-	id := c.Param("id")
-	err = cli.ServiceRemove(ctx, id)
+	serviceID := c.Param("serviceID")
+	err = cli.ServiceRemove(ctx, serviceID)
 }
