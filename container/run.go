@@ -2,6 +2,7 @@ package container
 
 import (
 	"context"
+	"strconv"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
@@ -10,7 +11,11 @@ import (
 )
 
 func (c Container) Run(ctx context.Context, cli *client.Client) (string, error) {
-	_, portMap, err := nat.ParsePortSpecs(c.Ports)
+	var Ports []string
+	for i := range c.Ports {
+		Ports = append(Ports, c.Ports[i].IP+":"+strconv.Itoa(int(c.Ports[i].PrivatePort))+":"+strconv.Itoa(int(c.Ports[i].PublicPort)))
+	}
+	_, portMap, err := nat.ParsePortSpecs(Ports)
 	if err != nil {
 		return "", err
 	}
