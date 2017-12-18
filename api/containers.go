@@ -34,13 +34,13 @@ func ListContainers(c *gin.Context) {
 	c.JSON(200, conts)
 }
 
-// DeleteContainer - deletes a container
-func DeleteContainer(c *gin.Context) {
+// RemoveContainer - deletes a container
+func RemoveContainer(c *gin.Context) {
 	ctx, cli, err := FetchContextAndClient()
 	if err != nil {
 		c.JSON(200, err)
 	}
 	containerID := c.Param("containerID")
 	err = cli.ContainerRemove(ctx, containerID, types.ContainerRemoveOptions{Force: true})
-	c.JSON(200, fmt.Sprintf("Container %s deleted", containerID))
+	c.JSON(200, fmt.Sprintf("Container %s removed", containerID))
 }

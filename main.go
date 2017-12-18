@@ -19,7 +19,12 @@ func main() {
 		// Containers
 		v1.GET("/container", api.ListContainers)
 		v1.GET("/container/:containerID", api.InspectContainer)
-		v1.DELETE("/container/:containerID", api.DeleteContainer)
+		v1.DELETE("/container/:containerID", api.RemoveContainer)
+
+		// Images
+		v1.GET("/image", api.ListImages)
+		v1.GET("/image/:imageID", api.InspectImage)
+		v1.DELETE("/image/:imageID", api.RemoveImage)
 	}
 
 	r.Run(":8080")
