@@ -1,0 +1,45 @@
+hash: 816a873c744ff9f8cd2444efe6ceb622012c1bc6b60d32f7a3b069b4897a4997
+updated: 2018-01-04T15:38:22.398816781+02:00
+imports:
+- name: github.com/docker/docker
+  version: fda904911d87a2b36e6fdcc048726bb6b593d944
+  subpackages:
+  - api/types/blkiodev
+  - api/types/container
+  - api/types/mount
+  - api/types/strslice
+- name: github.com/docker/go-connections
+  version: 3ede32e2033de7505e6500d6c868c2b9ed9f169d
+  subpackages:
+  - nat
+- name: github.com/docker/go-units
+  version: d59758554a3d3911fa25c0269de1ebe2f1912c39
+- name: github.com/gin-contrib/sse
+  version: 22d885f9ecc78bf4ee5d72b937e4bbcdc58e8cae
+- name: github.com/gin-gonic/gin
+  version: a712f77d7aaec7eb4766a663924aaa4e54d3fe70
+  subpackages:
+  - binding
+  - json
+  - render
+- name: github.com/golang/protobuf
+  version: 1e59b77b52bf8e4b449a57e6f79f21226d571845
+  subpackages:
+  - proto
+- name: github.com/json-iterator/go
+  version: 6dad2de6cca55c8b1f92e413f744a98f279b8a99
+- name: github.com/mattn/go-isatty
+  version: 6ca4dbf54d38eea1a992b3c722a76a5d1c4cb25c
+- name: github.com/ugorji/go
+  version: ccfe18359b55b97855cee1d3f74e5efbda4869dc
+  subpackages:
+  - codec
+- name: golang.org/x/sys
+  version: 28a7276518d399b9634904daad79e18b44d481bc
+  subpackages:
+  - unix
+- name: gopkg.in/go-playground/validator.v8
+  version: 5f1438d3fca68893a817e4a66806cea46a9e4ebf
+- name: gopkg.in/yaml.v2
+  version: c95af922eae69f190717a0b7148960af8c55a072
+testImports: []

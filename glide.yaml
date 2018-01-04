@@ -1,0 +1,10 @@
+package: github.com/kristoy0/receptacle
+import:
+- package: github.com/docker/docker
+  subpackages:
+  - api/types/container
+- package: github.com/docker/go-connections
+  subpackages:
+  - nat
+- package: github.com/docker/go-units
+- package: github.com/gin-gonic/gin
