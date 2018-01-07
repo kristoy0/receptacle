@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+service Tasks {
+    rpc Deploy(DeployRequest) returns (DeployResponse) {}
+}
+
+message Resources {
+    string memory = 1;
+    string CPU = 2;
+    int32 instances = 3;
+    repeated string volumes = 4;
+}
+
+message DeployRequest {
+    string name = 1;
+    string image = 2;
+    repeated string command = 3;
+    Resources resources = 4;
+    repeated string env = 5;
+}
+
+message DeployResponse {
+    string status = 1;
+}
