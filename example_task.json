@@ -16,5 +16,8 @@
   "env": [
     "BAR=foo",
     "FOO=bar"
+  ],
+  "nodes": [
+    "receptacle-agent"
   ]
 }

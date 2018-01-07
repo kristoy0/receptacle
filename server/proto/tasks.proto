@@ -2,6 +2,8 @@ syntax = "proto3";
 
 service Tasks {
     rpc Deploy(DeployRequest) returns (DeployResponse) {}
+    rpc Undeploy(UndeployRequest) returns (UndeployResponse) {}
+    rpc List(ListRequest) returns (ListResponse) {}
 }
 
 message Resources {
@@ -17,8 +19,30 @@ message DeployRequest {
     repeated string command = 3;
     Resources resources = 4;
     repeated string env = 5;
+    repeated string nodes = 6;
 }
 
 message DeployResponse {
     string status = 1;
+}
+
+message UndeployRequest {
+    string name = 1;
+}
+
+message UndeployResponse {
+    string status = 1;
+}
+
+message ListRequest {
+    string id = 1;
+}
+
+message ListResponse {
+    string name = 1;
+    string image = 2;
+    string memory = 3;
+    string CPU = 4;
+    int32 instances = 5;
+    string status = 6;
 }

@@ -29,6 +29,9 @@ func main() {
 			"FOO=bar",
 			"BAR=foo",
 		},
+		Nodes: []string{
+			"node-1", "node-2",
+		},
 	})
 	if err != nil {
 		log.Println(err)
