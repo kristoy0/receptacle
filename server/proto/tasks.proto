@@ -8,7 +8,7 @@ service Tasks {
 
 message Resources {
     string memory = 1;
-    string CPU = 2;
+    float CPU = 2;
     int32 instances = 3;
     repeated string volumes = 4;
 }
