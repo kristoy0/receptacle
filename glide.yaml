@@ -1,10 +1,25 @@
 package: github.com/kristoy0/receptacle
 import:
-- package: github.com/docker/docker
+- package: docker.io/go-docker
   subpackages:
+  - api/types
   - api/types/container
-- package: github.com/docker/go-connections
-  subpackages:
-  - nat
+  - api/types/network
 - package: github.com/docker/go-units
-- package: github.com/gin-gonic/gin
+- package: github.com/docker/libkv
+  subpackages:
+  - store
+  - store/consul
+- package: github.com/golang/protobuf
+  subpackages:
+  - proto
+- package: github.com/hashicorp/consul
+  subpackages:
+  - api
+- package: github.com/micro/go-micro
+  subpackages:
+  - client
+  - server
+- package: golang.org/x/net
+  subpackages:
+  - context
