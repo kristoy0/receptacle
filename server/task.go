@@ -6,6 +6,7 @@ import (
 
 	proto "github.com/kristoy0/receptacle/server/proto"
 	"github.com/hashicorp/consul/api"
+	"github.com/kristoy0/receptacle/store"
 	"encoding/json"
 	"errors"
 )
@@ -30,7 +31,7 @@ func (t *Task) Deploy(ctx context.Context, req *proto.DeployRequest, res *proto.
 		return err
 	}
 
-	kv, err := getKV()
+	kv, err := store.GetKV()
 	if err != nil {
 		return err
 	}
@@ -47,7 +48,7 @@ func (t *Task) Deploy(ctx context.Context, req *proto.DeployRequest, res *proto.
 func (*Task) Undeploy(ctx context.Context, req *proto.UndeployRequest, res *proto.UndeployResponse) error {
 	res.Status = "Job" + req.Name + "undeployed"
 
-	kv, err := getKV()
+	kv, err := store.GetKV()
 	if err != nil {
 		return err
 	}
