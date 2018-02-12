@@ -4,6 +4,7 @@ import (
 	"github.com/docker/libkv"
 	"github.com/docker/libkv/store"
 	"github.com/docker/libkv/store/consul"
+	"github.com/kristoy0/receptacle/store"
 
 	"encoding/json"
 	"log"
@@ -53,7 +54,7 @@ func createHandler(key string, value []byte) error {
 	}
 
 	if !cexists {
-		task := Task{}
+		task := store.Task{}
 		if err := json.Unmarshal(value, &task); err != nil {
 			return err
 		}

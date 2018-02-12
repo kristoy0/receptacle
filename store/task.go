@@ -1,4 +1,4 @@
-package main
+package store
 
 // Resources - Resource spec
 type Resources struct {

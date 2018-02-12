@@ -6,9 +6,10 @@ import (
 	docker "docker.io/go-docker"
 	"docker.io/go-docker/api/types"
 	"docker.io/go-docker/api/types/network"
+	"github.com/kristoy0/receptacle/store"
 )
 
-func CreateContainer(task Task) error {
+func CreateContainer(task store.Task) error {
 	cli, err := docker.NewEnvClient()
 	if err != nil {
 		return err

@@ -6,6 +6,8 @@
 *.test
 *.out
 *.log
+*.db
+*.db.lock
 .vagrant/
 .glide/
 .idea/
