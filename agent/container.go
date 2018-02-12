@@ -1,10 +1,11 @@
 package main
 
 import (
-	"docker.io/go-docker"
+	"context"
+
+	docker "docker.io/go-docker"
 	"docker.io/go-docker/api/types"
 	"docker.io/go-docker/api/types/network"
-	"context"
 )
 
 func CreateContainer(task Task) error {
@@ -38,7 +39,7 @@ func CreateContainer(task Task) error {
 	return nil
 }
 
-func ContainerExists(name string) (bool, error){
+func ContainerExists(name string) (bool, error) {
 	cli, err := docker.NewEnvClient()
 	if err != nil {
 		return false, err

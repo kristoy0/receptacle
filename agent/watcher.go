@@ -5,9 +5,9 @@ import (
 	"github.com/docker/libkv/store"
 	"github.com/docker/libkv/store/consul"
 
+	"encoding/json"
 	"log"
 	"time"
-	"encoding/json"
 )
 
 func WatchServiceDiscovery() error {
@@ -18,7 +18,7 @@ func WatchServiceDiscovery() error {
 		store.CONSUL,
 		[]string{client},
 		&store.Config{
-			ConnectionTimeout: 10*time.Second,
+			ConnectionTimeout: 10 * time.Second,
 		},
 	)
 
@@ -33,32 +33,45 @@ func WatchServiceDiscovery() error {
 		case pairs := <-events:
 			for _, pair := range pairs {
 				if pair.Key != "" && string(pair.Value) != "" {
-					key, err := stripDirectory(string(pair.Key))
-					if err != nil {
-						return err
-					}
-					log.Println(key)
-
-					exists, err := ContainerExists(key)
-					if err != nil {
-						return err
-					}
-					if !exists {
-						task := Task{}
-						if err := json.Unmarshal(pair.Value, &task); err != nil {
-							return err
-						}
-						log.Println(task)
-
-						// Need to pull image first
-
-						err := CreateContainer(task)
-						if err != nil {
-							return err
-						}
-					}
+					createHandler(pair.Key, pair.Value)
 				}
 			}
+		}
+	}
+}
+
+func createHandler(key string, value []byte) error {
+	skey, err := stripDirectory(string(key))
+	if err != nil {
+		return err
+	}
+	log.Println(skey)
+
+	cexists, err := ContainerExists(skey)
+	if err != nil {
+		return err
+	}
+
+	if !cexists {
+		task := Task{}
+		if err := json.Unmarshal(value, &task); err != nil {
+			return err
+		}
+		log.Println(task)
+		iexists, err := ImageExists(task.Image)
+		if err != nil {
+			return err
+		}
+		if !iexists {
+			err = PullImage(task.Image)
+			if err != nil {
+				return err
+			}
+		}
+
+		err = CreateContainer(task)
+		if err != nil {
+			return err
 		}
 	}
 

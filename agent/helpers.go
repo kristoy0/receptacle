@@ -2,9 +2,10 @@ package main
 
 import (
 	"errors"
+	"strings"
+
 	"docker.io/go-docker/api/types/container"
 	unit "github.com/docker/go-units"
-	"strings"
 )
 
 func toConfig(image string, command, env []string) (container.Config, error) {
@@ -39,7 +40,7 @@ func toHostConfig(resources Resources) (container.HostConfig, error) {
 	return config, nil
 }
 
-func stripDirectory(key string) (string, error){
+func stripDirectory(key string) (string, error) {
 	if strings.Contains(key, "/") {
 		split := strings.Split(key, "/")
 		return split[1], nil
