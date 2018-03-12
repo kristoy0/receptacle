@@ -1,10 +1,12 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
+	"net/http"
 	"os"
 
 	"github.com/boltdb/bolt"
@@ -28,6 +30,7 @@ func main() {
 	})
 
 	srcFile := ""
+	dstIP := ""
 
 	app := cli.NewApp()
 	app.Name = "rectl"
@@ -62,6 +65,22 @@ func main() {
 			},
 		},
 		{
+			Name:  "remove",
+			Usage: "Remove a task",
+			Action: func(c *cli.Context) error {
+				if c.Args().First() != "" {
+					db.Update(func(tx *bolt.Tx) error {
+						b := tx.Bucket([]byte("tasks"))
+						fmt.Println(c.Args().First())
+						err := b.Delete([]byte(c.Args().First()))
+						return err
+					})
+				}
+
+				return nil
+			},
+		},
+		{
 			Name:  "tasks",
 			Usage: "View tasks from local database",
 			Action: func(c *cli.Context) error {
@@ -86,6 +105,67 @@ func main() {
 						return nil
 					})
 				}
+				return nil
+			},
+		},
+		{
+			Name:  "deploy",
+			Usage: "Deploy a task from the local database",
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:        "master, m",
+					Usage:       "Pass master address",
+					Destination: &dstIP,
+				},
+			},
+			Action: func(c *cli.Context) error {
+				if c.Args().First() == "" {
+					fmt.Println("Task name not specified")
+				} else if dstIP == "" {
+					fmt.Println("Master address not specified")
+				} else {
+					db.View(func(tx *bolt.Tx) error {
+						b := tx.Bucket([]byte("tasks"))
+						v := b.Get([]byte(c.Args().First()))
+
+						data := store.Task{}
+
+						if err := json.Unmarshal(v, &data); err != nil {
+							panic(err)
+						}
+
+						req := struct {
+							Service string
+							Method  string
+							Request store.Task
+						}{
+							"go.receptacle.server",
+							"Tasks.Deploy",
+							data,
+						}
+
+						byt, err := json.Marshal(req)
+						if err != nil {
+							return err
+						}
+
+						httpReq, err := http.NewRequest("POST", "http://"+dstIP+":8080/rpc", bytes.NewBuffer(byt))
+						httpReq.Header.Set("Content-Type", "application/json")
+
+						client := &http.Client{}
+						_, err = client.Do(httpReq)
+						if err != nil {
+							fmt.Println(err)
+						}
+
+						if err == nil {
+							fmt.Println("Deployed " + data.Name + " successfully.")
+						}
+
+						return nil
+					})
+				}
+
 				return nil
 			},
 		},

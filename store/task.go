@@ -3,7 +3,7 @@ package store
 // Resources - Resource spec
 type Resources struct {
 	Memory    string   `json:"memory,omitempty"`
-	CPU       string   `json:"cpu,omitempty"`
+	CPU       float32  `json:"cpu,omitempty"`
 	Instances int      `json:"instances,omitempty"`
 	Volumes   []string `json:"volumes,omitempty"`
 }

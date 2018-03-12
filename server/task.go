@@ -4,11 +4,12 @@ import (
 	"context"
 	"log"
 
-	proto "github.com/kristoy0/receptacle/server/proto"
-	"github.com/hashicorp/consul/api"
-	"github.com/kristoy0/receptacle/store"
 	"encoding/json"
 	"errors"
+
+	"github.com/hashicorp/consul/api"
+	proto "github.com/kristoy0/receptacle/server/proto"
+	"github.com/kristoy0/receptacle/store"
 )
 
 type TaskHandler interface {
@@ -20,8 +21,6 @@ type TaskHandler interface {
 type Task struct{}
 
 func (t *Task) Deploy(ctx context.Context, req *proto.DeployRequest, res *proto.DeployResponse) error {
-	log.Println(req)
-
 	if req.Name == "" || req.Image == "" {
 		return errors.New("Name and/or image missing")
 	}
@@ -36,11 +35,13 @@ func (t *Task) Deploy(ctx context.Context, req *proto.DeployRequest, res *proto.
 		return err
 	}
 
-	p := &api.KVPair{Key: req.Name, Value: []byte(mreq)}
+	p := &api.KVPair{Key: "receptacle/" + req.Name, Value: []byte(mreq)}
 	_, err = kv.Put(p, nil)
 	if err != nil {
 		return err
 	}
+
+	log.Println(req)
 
 	return nil
 }
