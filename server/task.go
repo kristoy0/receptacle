@@ -47,14 +47,14 @@ func (t *Task) Deploy(ctx context.Context, req *proto.DeployRequest, res *proto.
 }
 
 func (*Task) Undeploy(ctx context.Context, req *proto.UndeployRequest, res *proto.UndeployResponse) error {
-	res.Status = "Job" + req.Name + "undeployed"
+	res.Status = "Job " + req.Name + " undeployed"
 
 	kv, err := store.GetKV()
 	if err != nil {
 		return err
 	}
 
-	_, err = kv.Delete(req.Name, nil)
+	_, err = kv.Delete("receptacle/"+req.Name, nil)
 	if err != nil {
 		return err
 	}
