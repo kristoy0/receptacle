@@ -8,6 +8,8 @@ import (
 )
 
 func main() {
+	// Initialize the microservice
+	// This will register the agent to service discovery
 	service := micro.NewService(
 		micro.Name("go.receptacle.agent"),
 		micro.RegisterTTL(time.Second*30),
@@ -16,12 +18,11 @@ func main() {
 
 	service.Init()
 
-	if err := service.Run(); err != nil {
-		log.Fatal(err)
-	}
+	// Start watching for changes in the key/value store
+	// of the service discovery
+	go WatchServiceDiscovery()
 
-	err := WatchServiceDiscovery()
-	if err != nil {
+	if err := service.Run(); err != nil {
 		log.Fatal(err)
 	}
 }
