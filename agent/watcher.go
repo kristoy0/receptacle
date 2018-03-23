@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/docker/libkv"
-	"github.com/docker/libkv/store"
+	kvstore "github.com/docker/libkv/store"
 	"github.com/docker/libkv/store/consul"
 	"github.com/kristoy0/receptacle/store"
 
@@ -16,9 +16,9 @@ func WatchServiceDiscovery() error {
 	client := "127.0.0.1:8500"
 
 	kv, err := libkv.NewStore(
-		store.CONSUL,
+		kvstore.CONSUL,
 		[]string{client},
-		&store.Config{
+		&kvstore.Config{
 			ConnectionTimeout: 10 * time.Second,
 		},
 	)

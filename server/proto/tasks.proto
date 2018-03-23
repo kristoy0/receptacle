@@ -4,6 +4,7 @@ service Tasks {
     rpc Deploy(DeployRequest) returns (DeployResponse) {}
     rpc Undeploy(UndeployRequest) returns (UndeployResponse) {}
     rpc List(ListRequest) returns (ListResponse) {}
+    rpc Hosts(HostsRequest) returns (HostsResponse) {}
 }
 
 message Resources {
@@ -45,4 +46,19 @@ message ListResponse {
     string CPU = 4;
     int32 instances = 5;
     string status = 6;
+}
+
+message HostsRequest {}
+
+message Host {
+    string host = 1;
+    string status = 2;
+    string containers = 3;
+    string cpus = 4;
+    string memory = 5;
+    string docker = 6;
+}
+
+message HostsResponse {
+    repeated Host hosts = 1;
 }

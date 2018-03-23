@@ -1,15 +1,14 @@
 package main
 
 import (
-	/*
-	micro "github.com/micro/go-micro"
-	*/
 	"log"
-	/*"time"*/
+	"time"
+
+	micro "github.com/micro/go-micro"
 )
 
 func main() {
-/*	service := micro.NewService(
+	service := micro.NewService(
 		micro.Name("go.receptacle.agent"),
 		micro.RegisterTTL(time.Second*30),
 		micro.RegisterInterval(time.Second*15),
@@ -19,7 +18,7 @@ func main() {
 
 	if err := service.Run(); err != nil {
 		log.Fatal(err)
-	}*/
+	}
 
 	err := WatchServiceDiscovery()
 	if err != nil {

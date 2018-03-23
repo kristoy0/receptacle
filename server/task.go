@@ -16,6 +16,7 @@ type TaskHandler interface {
 	Deploy(context.Context, *proto.DeployRequest, *proto.DeployResponse) error
 	Undeploy(context.Context, *proto.UndeployRequest, *proto.UndeployResponse) error
 	List(context.Context, *proto.ListRequest, *proto.ListResponse) error
+	Hosts(context.Context, *proto.HostsRequest, *proto.HostsResponse) error
 }
 
 type Task struct{}
@@ -63,5 +64,9 @@ func (*Task) Undeploy(ctx context.Context, req *proto.UndeployRequest, res *prot
 }
 
 func (*Task) List(ctx context.Context, req *proto.ListRequest, res *proto.ListResponse) error {
+	return nil
+}
+
+func (*Task) Hosts(ctx context.Context, req *proto.HostsRequest, res *proto.HostsResponse) error {
 	return nil
 }

@@ -6,6 +6,7 @@ import (
 
 	"docker.io/go-docker/api/types/container"
 	unit "github.com/docker/go-units"
+	"github.com/kristoy0/receptacle/store"
 )
 
 func toConfig(image string, command, env []string) (container.Config, error) {
@@ -20,7 +21,7 @@ func toConfig(image string, command, env []string) (container.Config, error) {
 	return config, nil
 }
 
-func toHostConfig(resources Resources) (container.HostConfig, error) {
+func toHostConfig(resources store.Resources) (container.HostConfig, error) {
 	config := container.HostConfig{}
 
 	if resources.Memory != "" {
@@ -33,8 +34,8 @@ func toHostConfig(resources Resources) (container.HostConfig, error) {
 	if resources.Volumes != nil {
 		config.Binds = resources.Volumes
 	}
-	if resources.CPU != "" {
-		config.CpusetCpus = resources.CPU
+	if resources.CPU != 0 {
+		config.NanoCPUs = int64(resources.CPU * 1000000000)
 	}
 
 	return config, nil
