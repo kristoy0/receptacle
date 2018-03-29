@@ -68,5 +68,19 @@ func (*Task) List(ctx context.Context, req *proto.ListRequest, res *proto.ListRe
 }
 
 func (*Task) Hosts(ctx context.Context, req *proto.HostsRequest, res *proto.HostsResponse) error {
+	catalog, err := store.GetCatalog()
+	if err != nil {
+		return err
+	}
+
+	nodes, _, err := catalog.Nodes(&api.QueryOptions{})
+	if err != nil {
+		return err
+	}
+
+	for _, node := range nodes {
+		res.Hosts = append(res.Hosts, &proto.Host{node.ID, node.Node, node.Address})
+	}
+
 	return nil
 }

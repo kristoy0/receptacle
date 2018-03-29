@@ -51,12 +51,9 @@ message ListResponse {
 message HostsRequest {}
 
 message Host {
-    string host = 1;
-    string status = 2;
-    string containers = 3;
-    string cpus = 4;
-    string memory = 5;
-    string docker = 6;
+    string id = 1;
+    string node = 2;
+    string address = 3;
 }
 
 message HostsResponse {

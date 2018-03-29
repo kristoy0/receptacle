@@ -7,9 +7,20 @@ import (
 func GetKV() (*api.KV, error) {
 	client, err := api.NewClient(api.DefaultConfig())
 	if err != nil {
-		panic(err)
+		return &api.KV{}, err
 	}
 
 	kv := client.KV()
-	return kv, err
+	return kv, nil
+}
+
+func GetCatalog() (*api.Catalog, error) {
+	client, err := api.NewClient(api.DefaultConfig())
+	if err != nil {
+		return &api.Catalog{}, err
+	}
+
+	catalog := client.Catalog()
+
+	return catalog, nil
 }
