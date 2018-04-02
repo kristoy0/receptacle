@@ -3,6 +3,8 @@ package main
 import (
 	"context"
 	"log"
+	"strconv"
+	"strings"
 
 	"encoding/json"
 	"errors"
@@ -64,6 +66,32 @@ func (*Task) Undeploy(ctx context.Context, req *proto.UndeployRequest, res *prot
 }
 
 func (*Task) List(ctx context.Context, req *proto.ListRequest, res *proto.ListResponse) error {
+	agent, err := store.GetAgent()
+	if err != nil {
+		return err
+	}
+
+	if req.Id == "" {
+		svcs, err := agent.Services()
+		if err != nil {
+			return err
+		}
+
+		for _, svc := range svcs {
+			log.Println(svc.ID)
+			id := strings.Split(svc.ID, ":")
+			if !strings.HasPrefix(id[0], "go.receptacle") && !strings.HasPrefix(id[0], "go.micro") {
+				res.List = append(res.List, &proto.List{
+					Host:  id[0],
+					Name:  id[1],
+					Image: svc.Service,
+					Port:  strconv.Itoa(svc.Port),
+					Ip:    svc.Address,
+				})
+			}
+		}
+	}
+
 	return nil
 }
 
@@ -79,7 +107,11 @@ func (*Task) Hosts(ctx context.Context, req *proto.HostsRequest, res *proto.Host
 	}
 
 	for _, node := range nodes {
-		res.Hosts = append(res.Hosts, &proto.Host{node.ID, node.Node, node.Address})
+		res.Hosts = append(res.Hosts, &proto.Host{
+			Id:      node.ID,
+			Node:    node.Node,
+			Address: node.Address,
+		})
 	}
 
 	return nil

@@ -24,3 +24,14 @@ func GetCatalog() (*api.Catalog, error) {
 
 	return catalog, nil
 }
+
+func GetAgent() (*api.Agent, error) {
+	client, err := api.NewClient(api.DefaultConfig())
+	if err != nil {
+		return &api.Agent{}, err
+	}
+
+	agent := client.Agent()
+
+	return agent, nil
+}

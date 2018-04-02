@@ -39,13 +39,15 @@ message ListRequest {
     string id = 1;
 }
 
+message List {
+    string host = 1;
+    string name = 2;
+    string image = 3;
+    string port = 4;
+    string ip = 5;
+}
 message ListResponse {
-    string name = 1;
-    string image = 2;
-    string memory = 3;
-    string CPU = 4;
-    int32 instances = 5;
-    string status = 6;
+    repeated List list = 1;
 }
 
 message HostsRequest {}
