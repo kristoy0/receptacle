@@ -1,0 +1,29 @@
+version: "3"
+
+services:
+  receptacle-consul:
+    command: agent -server -bootstrap -rejoin -bind 0.0.0.0 -client 0.0.0.0 -ui
+    image: consul:latest
+    hostname: "registry"
+    ports:
+      - "8300:8300"
+      - "8400:8400"
+      - "8500:8500"
+      - "8600:53/udp"
+  receptacle-api:
+    command: --registry_address=receptacle-consul:8500 --api_handler=rpc api
+    image: microhq/micro:latest
+    links:
+      - receptacle-consul
+      - receptacle-server
+    ports:
+      - "8080:8080"
+  receptacle-server:
+    command: --registry_address=receptacle-consul:8500
+    build:
+      context: .
+      dockerfile: Dockerfile.server
+    environment:
+      - CONSUL_ADDR=receptacle-consul:8500
+    links:
+      - receptacle-consul

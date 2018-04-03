@@ -1,6 +1,8 @@
 package main
 
 import (
+	"os"
+
 	"github.com/docker/libkv"
 	kvstore "github.com/docker/libkv/store"
 	"github.com/docker/libkv/store/consul"
@@ -17,7 +19,7 @@ import (
 func WatchServiceDiscovery() error {
 	// register a consul instance
 	consul.Register()
-	client := "127.0.0.1:8500"
+	client := os.Getenv("CONSUL_ADDR")
 
 	kv, err := libkv.NewStore(
 		kvstore.CONSUL,

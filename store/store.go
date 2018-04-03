@@ -1,11 +1,13 @@
 package store
 
 import (
+	"os"
+
 	"github.com/hashicorp/consul/api"
 )
 
 func GetKV() (*api.KV, error) {
-	client, err := api.NewClient(api.DefaultConfig())
+	client, err := api.NewClient(&api.Config{Address: os.Getenv("CONSUL_ADDR"), Scheme: "http"})
 	if err != nil {
 		return &api.KV{}, err
 	}
@@ -15,7 +17,7 @@ func GetKV() (*api.KV, error) {
 }
 
 func GetCatalog() (*api.Catalog, error) {
-	client, err := api.NewClient(api.DefaultConfig())
+	client, err := api.NewClient(&api.Config{Address: os.Getenv("CONSUL_ADDR"), Scheme: "http"})
 	if err != nil {
 		return &api.Catalog{}, err
 	}
@@ -26,7 +28,7 @@ func GetCatalog() (*api.Catalog, error) {
 }
 
 func GetAgent() (*api.Agent, error) {
-	client, err := api.NewClient(api.DefaultConfig())
+	client, err := api.NewClient(&api.Config{Address: os.Getenv("CONSUL_ADDR"), Scheme: "http"})
 	if err != nil {
 		return &api.Agent{}, err
 	}
