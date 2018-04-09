@@ -10,6 +10,7 @@ services:
       - "8400:8400"
       - "8500:8500"
       - "8600:53/udp"
+
   receptacle-api:
     command: --registry_address=receptacle-consul:8500 --api_handler=rpc api
     image: microhq/micro:latest
@@ -18,6 +19,7 @@ services:
       - receptacle-server
     ports:
       - "8080:8080"
+
   receptacle-server:
     command: --registry_address=receptacle-consul:8500
     build:
@@ -27,6 +29,7 @@ services:
       - CONSUL_ADDR=receptacle-consul:8500
     links:
       - receptacle-consul
+
   receptacle-agent:
     command: --registry_address=receptacle-consul:8500
     build:
@@ -38,3 +41,11 @@ services:
       - receptacle-consul
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+      
+  receptacle-registrator:
+    command: consul://localhost:8500
+    image: gliderlabs/registrator:latest
+    links:
+      - receptacle-consul
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock

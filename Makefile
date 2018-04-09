@@ -21,4 +21,6 @@ build-agent:
 
 build-client:
 	GOOS=linux GOARCH=$(GOARCH) CGO_ENABLED=0 $(GOBUILD) -o $(RELEASE)-client-linux-$(GOARCH) $(PROJECTROOT)/client
-	GOOS=linux GOARCH=$(GOARCH) CGO_ENABLED=0 $(GOBUILD) -o $(RELEASE)-client-windows-$(GOARCH) $(PROJECTROOT)/client
+	GOOS=windows GOARCH=$(GOARCH) CGO_ENABLED=0 $(GOBUILD) -o $(RELEASE)-client-windows-$(GOARCH) $(PROJECTROOT)/client
+
+build-bins: build-server build-agent build-client

@@ -1,17 +1,11 @@
 package main
 
 import (
-	"bytes"
-	"encoding/json"
-	"fmt"
-	"io/ioutil"
 	"log"
-	"net/http"
 	"os"
 
 	"github.com/boltdb/bolt"
 	"github.com/kristoy0/receptacle/store"
-	"github.com/ryanuber/columnize"
 	"github.com/urfave/cli"
 )
 
@@ -21,8 +15,14 @@ type APIRequest struct {
 	Request store.Task
 }
 
-func main() {
-	db, err := bolt.Open("rectl.db", 0600, nil)
+var (
+	cmds    []cli.Command
+	srcFile string
+	dstIP   string
+)
+
+func init() {
+	db, err := DbConn()
 	if err != nil {
 		log.Fatalf("failed to open db: %v", err)
 	}
@@ -36,14 +36,7 @@ func main() {
 		return nil
 	})
 
-	srcFile := ""
-	dstIP := ""
-
-	app := cli.NewApp()
-	app.Name = "rectl"
-	app.Usage = "Receptacle command line client"
-
-	app.Commands = []cli.Command{
+	cmds = []cli.Command{
 		{
 			Name:  "create",
 			Usage: "Create a task",
@@ -54,66 +47,17 @@ func main() {
 					Destination: &srcFile,
 				},
 			},
-			Action: func(c *cli.Context) error {
-				data, err := ioutil.ReadFile(srcFile)
-				if err != nil {
-					return err
-				}
-				task := store.Task{}
-				json.Unmarshal(data, &task)
-
-				db.Update(func(tx *bolt.Tx) error {
-					b := tx.Bucket([]byte("tasks"))
-					err := b.Put([]byte(task.Name), data)
-					return err
-				})
-
-				return nil
-			},
+			Action: Create,
 		},
 		{
-			Name:  "remove",
-			Usage: "Remove a task",
-			Action: func(c *cli.Context) error {
-				if c.Args().First() != "" {
-					db.Update(func(tx *bolt.Tx) error {
-						b := tx.Bucket([]byte("tasks"))
-						fmt.Println(c.Args().First())
-						err := b.Delete([]byte(c.Args().First()))
-						return err
-					})
-				}
-
-				return nil
-			},
+			Name:   "remove",
+			Usage:  "Remove a task",
+			Action: Remove,
 		},
 		{
-			Name:  "tasks",
-			Usage: "View tasks from local database",
-			Action: func(c *cli.Context) error {
-				if c.Args().First() == "" {
-					db.View(func(tx *bolt.Tx) error {
-						b := tx.Bucket([]byte("tasks"))
-
-						c := b.Cursor()
-
-						for k, _ := c.First(); k != nil; k, _ = c.Next() {
-							fmt.Printf("%s", k)
-						}
-
-						return nil
-					})
-				} else {
-					db.View(func(tx *bolt.Tx) error {
-						b := tx.Bucket([]byte("tasks"))
-						v := b.Get([]byte(c.Args().First()))
-
-						fmt.Printf("%s", v)
-						return nil
-					})
-				}
-				return nil
-			},
+			Name:   "tasks",
+			Usage:  "View tasks from local database",
+			Action: Tasks,
 		},
 		{
 			Name:  "deploy",
@@ -125,52 +69,7 @@ func main() {
 					Destination: &dstIP,
 				},
 			},
-			Action: func(c *cli.Context) error {
-				if c.Args().First() == "" {
-					fmt.Println("Task name not specified")
-				} else if dstIP == "" {
-					fmt.Println("Master address not specified")
-				} else {
-					db.View(func(tx *bolt.Tx) error {
-						b := tx.Bucket([]byte("tasks"))
-						v := b.Get([]byte(c.Args().First()))
-
-						data := store.Task{}
-
-						if err := json.Unmarshal(v, &data); err != nil {
-							panic(err)
-						}
-
-						req := APIRequest{
-							"go.receptacle.server",
-							"Tasks.Deploy",
-							data,
-						}
-
-						byt, err := json.Marshal(req)
-						if err != nil {
-							return err
-						}
-
-						httpReq, err := http.NewRequest("POST", "http://"+dstIP+":8080/rpc", bytes.NewBuffer(byt))
-						httpReq.Header.Set("Content-Type", "application/json")
-
-						client := &http.Client{}
-						_, err = client.Do(httpReq)
-						if err != nil {
-							fmt.Println(err)
-						}
-
-						if err == nil {
-							fmt.Println("Deployed " + data.Name + " successfully.")
-						}
-
-						return nil
-					})
-				}
-
-				return nil
-			},
+			Action: Deploy,
 		},
 		{
 			Name:  "undeploy",
@@ -182,93 +81,21 @@ func main() {
 					Destination: &dstIP,
 				},
 			},
-			Action: func(c *cli.Context) error {
-				if c.Args().First() == "" {
-					fmt.Println("Task name not specified")
-				} else if dstIP == "" {
-					fmt.Println("Master address not specified")
-				} else {
-					data := store.Task{
-						Name: c.Args().First(),
-					}
-
-					req := APIRequest{
-						"go.receptacle.server",
-						"Tasks.Undeploy",
-						data,
-					}
-
-					byt, err := json.Marshal(req)
-					if err != nil {
-						return err
-					}
-
-					httpReq, err := http.NewRequest("POST", "http://"+dstIP+":8080/rpc", bytes.NewBuffer(byt))
-					httpReq.Header.Set("Content-Type", "application/json")
-
-					client := &http.Client{}
-					_, err = client.Do(httpReq)
-					if err != nil {
-						fmt.Println(err)
-					}
-
-					if err == nil {
-						fmt.Println("Undeployed " + c.Args().First() + " successfully.")
-					}
-				}
-				return nil
-			},
+			Action: Undeploy,
 		},
 		{
-			Name:  "hosts",
-			Usage: "List all hosts",
-			Action: func(c *cli.Context) error {
-				req := APIRequest{
-					"go.receptacle.server",
-					"Tasks.Hosts",
-					store.Task{},
-				}
-
-				byt, err := json.Marshal(req)
-				if err != nil {
-					return err
-				}
-
-				httpReq, err := http.NewRequest("POST", "http://"+dstIP+":8080/rpc", bytes.NewBuffer(byt))
-				httpReq.Header.Set("Content-Type", "application/json")
-
-				client := &http.Client{}
-				resp, err := client.Do(httpReq)
-				if err != nil {
-					log.Println(err)
-				}
-
-				read, err := ioutil.ReadAll(resp.Body)
-				if err != nil {
-					log.Println(err)
-				}
-
-				data := store.Nodes{}
-
-				err = json.Unmarshal(read, &data)
-				if err != nil {
-					log.Println(err)
-				}
-
-				out := []string{
-					"ID | NODE | ADDRESS",
-				}
-
-				for _, node := range data.Hosts {
-					body := fmt.Sprintf("%s | %s | %s", node.ID[:8], node.Node, node.Address)
-					out = append(out, body)
-				}
-
-				fmt.Println(columnize.SimpleFormat(out))
-				return nil
-			},
+			Name:   "hosts",
+			Usage:  "List all hosts",
+			Action: Hosts,
 		},
 	}
+}
 
+func main() {
+	app := cli.NewApp()
+	app.Name = "rectl"
+	app.Usage = "Receptacle command line client"
+
+	app.Commands = cmds
 	app.Run(os.Args)
 }
