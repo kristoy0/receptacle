@@ -2,7 +2,7 @@ version: "3"
 
 services:
   receptacle-consul:
-    command: agent -server -bootstrap -rejoin -bind 0.0.0.0 -client 0.0.0.0 -ui
+    command: agent -server -bootstrap -rejoin -advertise ${EXTERNAL_IP} -bind 0.0.0.0 -client 0.0.0.0 -ui
     image: consul:latest
     hostname: "registry"
     ports:
@@ -43,9 +43,8 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       
   receptacle-registrator:
-    command: consul://receptacle-consul:8500
+    command: -ip=${EXTERNAL_IP} consul://${EXTERNAL_IP}:8500
     image: gliderlabs/registrator:latest
-    links:
-      - receptacle-consul
+    network_mode: "host"
     volumes:
       - /var/run/docker.sock:/tmp/docker.sock

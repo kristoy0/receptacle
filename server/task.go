@@ -78,9 +78,9 @@ func (*Task) List(ctx context.Context, req *proto.ListRequest, res *proto.ListRe
 		}
 
 		for _, svc := range svcs {
-			log.Println(svc.ID)
 			id := strings.Split(svc.ID, ":")
-			if !strings.HasPrefix(id[0], "go.receptacle") && !strings.HasPrefix(id[0], "go.micro") {
+
+			if len(id) > 2 && !strings.HasPrefix(id[1], "receptacle") {
 				res.List = append(res.List, &proto.List{
 					Host:  id[0],
 					Name:  id[1],
@@ -89,6 +89,7 @@ func (*Task) List(ctx context.Context, req *proto.ListRequest, res *proto.ListRe
 					Ip:    svc.Address,
 				})
 			}
+
 		}
 	}
 

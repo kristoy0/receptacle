@@ -88,6 +88,11 @@ func init() {
 			Usage:  "List all hosts",
 			Action: Hosts,
 		},
+		{
+			Name:   "services",
+			Usage:  "List all services",
+			Action: Services,
+		},
 	}
 }
 
