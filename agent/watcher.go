@@ -1,8 +1,12 @@
 package main
 
 import (
+	"context"
 	"os"
+	"strings"
 
+	docker "docker.io/go-docker"
+	"docker.io/go-docker/api/types"
 	"github.com/docker/libkv"
 	kvstore "github.com/docker/libkv/store"
 	"github.com/docker/libkv/store/consul"
@@ -13,21 +17,35 @@ import (
 	"time"
 )
 
-// WatchServiceDiscovery -
-// This function is used to watch the service
-// discovery kv store
-func WatchServiceDiscovery() error {
+var (
+	kv kvstore.Store
+)
+
+func init() {
 	// register a consul instance
+
 	consul.Register()
 	client := os.Getenv("CONSUL_ADDR")
 
-	kv, err := libkv.NewStore(
+	var err error
+
+	kv, err = libkv.NewStore(
 		kvstore.CONSUL,
 		[]string{client},
 		&kvstore.Config{
 			ConnectionTimeout: 10 * time.Second,
 		},
 	)
+
+	if err != nil {
+		log.Fatalln(err)
+	}
+}
+
+// WatchServiceDiscovery -
+// This function is used to watch the service
+// discovery kv store
+func WatchServiceDiscovery() error {
 
 	stopCh := make(<-chan struct{})
 
@@ -50,8 +68,43 @@ func WatchServiceDiscovery() error {
 					createHandler(pair.Key, pair.Value)
 				}
 			}
+		default:
+			err := deleteHandler()
+			if err != nil {
+				log.Println(err)
+			}
 		}
 	}
+}
+
+func deleteHandler() error {
+	cli, err := docker.NewEnvClient()
+	if err != nil {
+		return err
+	}
+
+	ctx := context.Background()
+
+	conts, err := cli.ContainerList(ctx, types.ContainerListOptions{})
+	if err != nil {
+		return err
+	}
+
+	for _, cont := range conts {
+		if !strings.Contains(cont.Names[0][1:], "receptacle") {
+			exists, err := kv.Exists("receptacle/" + cont.Names[0][1:])
+
+			if err != nil {
+				return err
+			}
+
+			if !exists {
+				_ = DeleteContainer(cont.ID)
+			}
+		}
+	}
+
+	return nil
 }
 
 func createHandler(key string, value []byte) error {

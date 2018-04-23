@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"log"
 
 	docker "docker.io/go-docker"
 	"docker.io/go-docker/api/types"
@@ -43,6 +44,25 @@ func CreateContainer(task store.Task) error {
 	if err != nil {
 		return err
 	}
+
+	return nil
+}
+
+func DeleteContainer(id string) error {
+	// Fetch the docker client from environment
+	cli, err := docker.NewEnvClient()
+	if err != nil {
+		return err
+	}
+
+	ctx := context.Background()
+
+	err = cli.ContainerRemove(ctx, id, types.ContainerRemoveOptions{Force: true})
+	if err != nil {
+		return err
+	}
+
+	log.Println("Deleting container " + id)
 
 	return nil
 }

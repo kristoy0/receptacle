@@ -1,0 +1,8 @@
+{
+    "name": "nginx-test",
+    "image": "nginx",
+    "resources": {
+      "memory": "512MB",
+      "cpu": 0.5
+    }
+}

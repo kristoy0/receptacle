@@ -46,8 +46,10 @@ func ImageExists(name string) (bool, error) {
 	// in the look for a matching image
 	conts, err := cli.ImageList(ctx, types.ImageListOptions{})
 	for _, cont := range conts {
-		if cont.RepoTags[0] == name {
-			return true, nil
+		if len(cont.RepoTags) > 0 {
+			if cont.RepoTags[0] == name {
+				return true, nil
+			}
 		}
 	}
 	return false, err

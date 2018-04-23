@@ -43,7 +43,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       
   receptacle-registrator:
-    command: consul://localhost:8500
+    command: consul://receptacle-consul:8500
     image: gliderlabs/registrator:latest
     links:
       - receptacle-consul
